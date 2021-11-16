@@ -1,9 +1,9 @@
 ```bash
 # Clone this repository
-1）git clone https://github.com/albert2liu/ipedit_beta.git
+1）git clone https://github.com/aviosys101/Profile_batchupdate.git
 
 # Go into the repository
-2）cd ipedit_beta
+2）cd Profile_batchupdate
 # Install dependencies
 3)npm init -y
   npm i --save-dev electron
