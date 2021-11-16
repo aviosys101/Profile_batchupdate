@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>IP98xx Configuration Tool</title>
+    <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline';" />
+    <link href="simple.css" type="text/CSS" rel="stylesheet" />
+
+    <script type="text/javascript" src="./searcher.js"></script>
+    <!-- <script type="text/javascript" src="./searcher_tf.js"></script> //-->
+    <script>
+        mtk_server();
+        //tf_server();
+    </script>
+       
+</head>
+<body style="background: white;">
+    <div>
+        <ul>
+			<li><a href="#local" class="active" onclick="send_brocast('IPQUERY,0');/*send_brocast_main_tf('PCEdit\2');*/">Lan Search</a></li>
+			<!-- <li><a href="#internet" onclick="test_network()">Internet Search</a></li> //-->
+		
+		</ul>
+
+    </div>
+    <!--
+    <h1>IP98xx Configuration Tool</h1>
+    <p>
+        We are using Node.js <span id="node-version"></span>,
+        Chromium <span id="chrome-version"></span>,
+        and Electron <span id="electron-version"></span>.
+        </p> 
+    //-->  
+        <div>
+          <table id="lan_table">
+        <thead>
+            <tr><td colspan="11"><h1>MTK</h1>
+                User Name : <input type="text" name="Comuser" id="Comuser" value="admin">
+                Password : <input type="text" name="Compass" id="Compass" value="12345678"></td></tr>
+            <tr>
+                <th rowspan="2">Name</th>
+                <th rowspan="2">Mac</th>
+                <th rowspan="2">IP</th>
+                <th rowspan="2">Netmask</th>
+                <th rowspan="2">Gateway</th>
+                <th rowspan="2">DHCP</th>
+                <th rowspan="2">Version</th>
+                <th rowspan="2">Wifi</th>
+                <th rowspan="2">Action</th>
+                <th colspan="2">Configuration</th>
+                <tr><td>Down-Load</td><td>Up-Load</td></tr>
+            </tr>
+        </thead>
+    
+        <tbody id="lan_tbody">
+    
+        </tbody>
+<!--
+        <div>
+          <table id="lan_table_tf">
+        <thead>
+            <tr><td colspan="9">TF</td></tr>
+            <tr>
+                <th>Name</th>
+                <th>Mac</th>
+                <th>IP</th>
+                <th>Netmask</th>
+                <th>Gateway</th>
+                <th>DHCP</th>
+                <th>Version</th>
+                <th>Wifi</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+    
+        <tbody id="lan_tbody_tf">
+    
+        </tbody>
+//-->        
+    </table>
+</div>
+
+      <label for="status"></label>
+      <div align="center">
+        <textarea name="status" cols="125" rows="8" id="status"></textarea>
+      </div>
+    
+<script>
+        require('electron').ipcRenderer.on('lan_search', (event, message) => {
+          console.log(message);
+          var msg = Buffer.from('IPQUERY,0');
+          send_brocast(msg);
+        })
+/*        
+        require('electron').ipcRenderer.on('lan_search', (event, message_tf) => {
+          console.log(message_tf);
+          var msg_tf = Buffer.from('PCEdit\2');
+          send_brocast_main_tf(msg_tf);
+        })        
+*/        
+      </script>
+</body>
+</html>

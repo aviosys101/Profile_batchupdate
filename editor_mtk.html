@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Network Settings</title>
+    <script type="text/javascript" src="./searcher.js"></script>
+
+</head>
+<body>
+<h1>Edit Network Settings</h1>
+<hr>
+<form name="form1" method="post" action="">
+                      
+  <p>
+    <label for="dev_name">Name:</label>
+    <input type="text" name="dev_name" id="dev_name">
+  </p>
+  <p>
+    <label for="ipaddr">IP address:</label>
+    <input type="text" name="ipaddr" id="ipaddr">
+    </p>
+
+  <p>
+    <label for="netmask">Netmask:</label>
+    <input type="text" name="netmask" id="netmask">
+  </p>
+  <p>
+    <label for="gateway">Gateway:</label>
+    <input type="text" name="gateway" id="gateway">
+  </p>
+  <p>
+    <label for="http_port">Http Port:</label>
+    <input type="text" name="http_port" id="http_port" onKeyUp="value=value.replace(/\D/g,'')" onafterpaste="value=value.replace(/\D/g,'')" >
+  </p>
+  <p>
+  	<label for="dhcp">DHCP:</label>
+    <input type="checkbox" name="dhcp" id="dhcp">
+    
+  </p>
+  <p>
+    <label for="username">Username:</label>
+    <input type="text" name="username" id="username">
+  </p>
+  <p>
+    <label for="password">Password:</label>
+    <input type="password" name="password" id="password">
+  </p>
+  <hr>
+  <p align="center">
+    <input type="submit" name="ok" id="ok" onclick="update_network()" value="submit">
+  </p>
+</form>
+
+<script>
+  var edit_device;
+  var g_szSeed_old=[0x05,0x68,0x77,0x45,0x56,0x91,0x32,0x80];// xx,h,w,E,V,xx,2,xx
+	var g_szSeed_new=[0x05,0x07,0x82,0x8e,0x01,0x91,0x8a,0x80];
+
+  String.prototype.toBytes = function(encoding){
+    var bytes = [];
+    var buff = new Buffer(this, encoding);
+    for(var i= 0; i< buff.length; i++){
+      var byteint = buff[i];
+      bytes.push(byteint);
+    }
+    return bytes;
+  }
+ 
+ 
+	function Encrypt2(src, type) {
+		var idx;	
+	  var dest = src.toString();
+    var szDest = dest.toBytes('latin1');
+    var szSource = szDest;
+
+		var len = src.toString().length;
+		for(var i = 0; i < len; i++) {
+			idx = i % 8;
+			if(type == 0)
+				szDest[i] = (szSource[i]^g_szSeed_old[idx]);
+			else
+				szDest[i] = (szSource[i]^g_szSeed_new[idx]);
+		}
+		var ret = null;
+		try {
+      //szDest = [52,53,-79,-70,52,-89,-67,-72];
+			//ret = szDest.toString('latin1');
+      ret = Buffer.from(szDest).toString("latin1");
+		} catch (e) {			
+			console.log(e);
+		}			
+		return ret;
+		
+	}
+
+  function Encrypt(src, type) {
+		var idx;	
+	  var dest = src.toString();
+    var szDest = Buffer.from(dest, "latin1");
+    var szSource = szDest;
+
+		var len = src.toString().length;
+		for(var i = 0; i < len; i++) {
+			idx = i % 8;
+			if(type == 0)
+				szDest[i] = (szSource[i]^g_szSeed_old[idx]);
+			else
+				szDest[i] = (szSource[i]^g_szSeed_new[idx]);
+		}
+		var ret = null;
+		try {
+			ret = szDest.toString('latin1');
+      //ret = Buffer.from(szDest).toString("latin1");
+		} catch (e) {			
+			console.log(e);
+		}			
+		return ret;
+		
+	}
+       
+  function check_ip(ip) {
+    var re=/^(\d+)\.(\d+)\.(\d+)\.(\d+)$/;
+    if(re.test(ip)) {
+      if( RegExp.$1<256 && RegExp.$2<256 && RegExp.$3<256 && RegExp.$4<256)
+      return true;
+    }
+    alert("Error IP address!");
+    return false;
+  }
+
+  function load_data(dev_info) {
+
+    edit_device = dev_info;
+
+    var ipaddr = dev_info.ip;
+    var http_port = dev_info.httpPort;
+   
+    document.getElementById('dev_name').value = dev_info.name;
+    document.getElementById('ipaddr').value = ipaddr;
+    document.getElementById('netmask').value = dev_info.netmask;
+    document.getElementById('gateway').value = dev_info.gateway;    
+    document.getElementById('http_port').value = http_port;
+    document.getElementById('dhcp').checked = (dev_info.dhcp == "ON"? true:false);
+    document.getElementById('username').value = "admin";
+    document.getElementById('password').value = "12345678";
+
+  }
+
+
+  function update_network() {
+    const util = require('util');
+    var dev_name = document.getElementById('dev_name').value;
+    var ipaddr = document.getElementById('ipaddr').value;
+    var netmask = document.getElementById('netmask').value;
+    var gateway = document.getElementById('gateway').value;
+    var http_port = document.getElementById('http_port').value;
+    var dhcp = document.getElementById('dhcp');
+    
+  
+    //console.log(dhcp.checked);
+    var username = document.getElementById('username').value;
+    var password = document.getElementById('password').value;
+
+    var sendMac = edit_device.mac;
+    var sendPassword = password;
+    var cmdHead;
+    var cmd;
+
+    var dev_dhcp;
+    if( dhcp.checked ) {
+      dev_dhcp = "ON";		
+    }else {
+      dev_dhcp = "OFF";
+    }
+
+    if(dev_name == "" || ipaddr == "" || netmask == "" || gateway == "" || http_port == "" || username == "") {
+      alert("Item can not be empty!");
+      return false;
+    }
+    if(http_port < 80 || http_port > 65535) {
+      alert("http port error!");
+      return false;
+    }
+    if(!check_ip(ipaddr)) {
+      alert("ip address error!");
+      return false;
+    }
+    if(edit_device.version == "") {
+      sendPassword = Encrypt(password, 0);
+    }else {
+      sendPassword = Encrypt(password, 1);
+    }
+    
+    if(1) {//if dev is MTK 7688 or 5350
+      if(edit_device.bWifi) {
+        cmdHead = "IPQUERYW";
+      }else {
+        cmdHead = "IPQUERY";
+      }
+      //only update name
+      if(edit_device.name != dev_name && edit_device.ip == ipaddr && edit_device.httpPort == http_port && edit_device.netmask == netmask && edit_device.gateway == gateway && edit_device.dhcp == dev_dhcp) {
+        cmd = util.format("%s,3,%s,%s,%s,%s", cmdHead, sendMac, dev_name, username, sendPassword);
+      }
+      //only update port
+      else if(edit_device.name == dev_name && edit_device.ip == ipaddr && edit_device.httpPort != http_port && edit_device.netmask == netmask && edit_device.gateway == gateway && edit_device.dhcp == dev_dhcp) {
+        cmd = util.format("%s,4,%s,%s,%s,%s", cmdHead, sendMac, http_port, username, sendPassword);
+      }
+      //only update dhcp
+      else if(edit_device.name == dev_name && edit_device.ip == ipaddr && edit_device.httpPort == http_port && edit_device.netmask == netmask && edit_device.gateway == gateway && edit_device.dhcp != dev_dhcp) {
+        cmd = util.format("%s,5,%s,%s,%s,%s", cmdHead, sendMac, dev_dhcp, username, sendPassword);
+      }
+      //only update ip/netmask/gateway
+      else if(edit_device.name == dev_name && edit_device.ip != ipaddr && edit_device.httpPort == http_port && edit_device.netmask != netmask && edit_device.gateway != gateway && edit_device.dhcp == dev_dhcp) {
+        cmd = String.format("%s,1,%s,%s,%s,%s,%s,%s", cmdHead, sendMac, ipaddr, netmask, gateway, username, sendPassword);
+      }
+      //update all
+      else {
+		  	cmd = util.format("%s,8,%s,%s,%s,%s,%s,%s,%s,%s,%s", cmdHead, sendMac, dev_name, ipaddr, netmask, gateway, http_port, dev_dhcp, username, sendPassword);
+      }
+     
+		
+    }
+    send_brocast_mtk(cmd);
+
+    // var sleep = function(time) {
+    // var startTime = new Date().getTime() + parseInt(time, 10);
+    //  while(new Date().getTime() < startTime) {}
+    // };
+    // sleep(3000); // 延时函数，单位ms
+    // const { ipcRenderer } = require('electron');
+    // ipcRenderer.send('close_edit_window', "please close editor window");
+
+}
+
+
+  require('electron').ipcRenderer.on('load_data', (event, message) => {
+    //console.log("device msg:"); console.log(message);
+    load_data(message);
+  })
+</script>
+
+</body>
+</html>

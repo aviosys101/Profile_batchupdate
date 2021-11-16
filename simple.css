@@ -1,0 +1,50 @@
+ul{
+    background-color: #333333;
+    list-style-type: none;
+    overflow: hidden;
+}
+
+li{
+    /*display与float两种方式使列表转为横向*/
+    /* display: inline; */
+    float: left;
+    
+}
+
+li a{
+    display:block ;
+    color: #FFFFFF;
+    text-decoration: none;
+    text-align: center;
+    padding: 14px 16px;
+}
+
+li a:hover{
+    background-color:#000000 ;
+    color: #999999;
+}
+
+.active{
+    background-color: #555;
+}
+
+
+/* *{
+    padding:0;
+    margin:0;
+} */
+table{
+    width:800px;
+    margin:100px auto;
+    border-collapse:collapse;/*边框合并模式*/
+    text-align:center;
+}
+td,th{
+    border:1px solid #333;
+}
+thead tr{
+    height:40px;
+    background-color: #cccccc;
+}
+
+
