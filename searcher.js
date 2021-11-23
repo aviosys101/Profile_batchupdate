@@ -363,8 +363,9 @@ function ResponseDevice_dl(devip,devmac) {
     let res=http.get(cmdstat,(response) => {
         console.log("response:"+response.statusCode);
         if(response.statusCode==200) {
-            msg1 += " download Configuration file to "+ __dirname+"\\Config\\"+devmac+"\\IPPower_Settings.dat OK..." + "\r\n";
-            status.value += msg1;
+            //msg1 += " download Configuration file to "+ __dirname+"\\Config\\"+devmac+"\\IPPower_Settings.dat OK..." + "\r\n";
+            msg1 += " download Configuration file to "+ "C:\\Config\\"+devmac+"\\IPPower_Settings.dat OK..." + "\r\n";
+            status.value += msg1;                        
             ipcRenderer.send('DownLoad_Configuration',devip,devmac,configpass);
         } else {  
             msg1 += " UserName or Password error !!" + "\r\n";

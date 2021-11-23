@@ -120,7 +120,9 @@ ipcMain.on('close_edit_window', (event, arg) => {
 })
 //Albert 2021/11/12 begin 
 ipcMain.on('DownLoad_Configuration', (event,argip,argmac,argpass) => {  
-  download(BrowserWindow.getFocusedWindow(), 'http://'+argpass+'@'+argip+'/cgi-bin/ExportSettings.sh', {directory: __dirname+"\\Config\\"+argmac});
+  //download();
+  //download(BrowserWindow.getFocusedWindow(), 'http://'+argpass+'@'+argip+'/cgi-bin/ExportSettings.sh', {directory: __dirname+"\\Config\\"+argmac});
+  download(BrowserWindow.getFocusedWindow(), 'http://'+argpass+'@'+argip+'/cgi-bin/ExportSettings.sh', {directory: "C:\\Config\\"+argmac});
   event.reply('DownLoad_Configuration', 'DownLoad ok');
 })
 
@@ -128,7 +130,8 @@ ipcMain.on('UpLoad_Configuration', (event,argip,argmac,argpass) => {
   var filepath="";
   dialog.showOpenDialog({
       filters: [{name: 'All Files',extensions: ['*']}],
-      defaultPath: __dirname+"\\Config\\"+argmac+"\\IPPower_Settings.dat",  
+      //defaultPath: __dirname+"\\Config\\"+argmac+"\\IPPower_Settings.dat",
+      defaultPath: "C:\\Config\\"+argmac+"\\IPPower_Settings.dat",  
       properties: ['openFile']}).then(result => {
           filepath=result.filePaths[0];
           console.log(filepath);
@@ -141,6 +144,7 @@ ipcMain.on('Exec_Config', (event,argip,argmac,argpass,argfilepath) => {
   //Albert 2021/11/15 Upload Configuration begin
   const boundaryKey = '----WebKitFormBoundaryq5TPfSCXuGeAhyLM';
   const form=new FormData();
+  //form.append('lan_ipaddr','10.33.122.3');
   form.append('filename', fs.createReadStream(argfilepath));
   const requestApi = {
     method: 'POST',

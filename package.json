@@ -24,11 +24,14 @@
   },
   "dependencies": {
     "electron-dl": "^3.3.0",
-    "electron-squirrel-startup": "^1.0.0"
+    "electron-squirrel-startup": "^1.0.0",
+    "form-data": "^4.0.0"
   },
   "config": {
     "forge": {
-      "packagerConfig": {},
+      "packagerConfig": {
+    	"asar": true
+      },
       "makers": [
         {
           "name": "@electron-forge/maker-squirrel",
