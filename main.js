@@ -133,7 +133,7 @@ ipcMain.on('UpLoad_Configuration', (event,argip,argmac,argpass) => {
       //defaultPath: __dirname+"\\Config\\"+argmac+"\\IPPower_Settings.dat",
       defaultPath: "C:\\Config\\"+argmac+"\\IPPower_Settings.dat",  
       properties: ['openFile']}).then(result => {
-          filepath=result.filePaths[0];
+          filepath=result.filePaths[0];          
           console.log(filepath);
           event.reply('UpLoad_path', filepath);
       })      
@@ -142,10 +142,24 @@ ipcMain.on('UpLoad_Configuration', (event,argip,argmac,argpass) => {
 
 ipcMain.on('Exec_Config', (event,argip,argmac,argpass,argfilepath) => {
   //Albert 2021/11/15 Upload Configuration begin
+  const tempPath="C:\\Config\\"+argmac+"\\IPPower_Settings_Temp.dat";
   const boundaryKey = '----WebKitFormBoundaryq5TPfSCXuGeAhyLM';
-  const form=new FormData();
-  //form.append('lan_ipaddr','10.33.122.3');
-  form.append('filename', fs.createReadStream(argfilepath));
+  const form=new FormData();  
+  //替換lan_ipaddr地址
+  //form.append('filename', fs.createReadStream(argfilepath));
+  var data=fs.readFileSync(argfilepath);  
+  var istart=data.toString().search('lan_ipaddr');
+  var iend=data.toString().search('lan_netmask');
+  var str_replace=data.toString().substr(istart,iend-istart-1);
+  //console.log(" Str_key: "+str_replace+" ["+istart+"] "+" ["+iend+"] "); 
+  var result=data.toString().replace(str_replace,'lan_ipaddr='+argip);
+  //console.log(result.toString());
+  fs.writeFileSync(tempPath,result.toString(),function(){});
+  form.append('filename', fs.createReadStream(tempPath));
+  if(fs.existsSync(tempPath)) {
+    fs.unlinkSync(tempPath);
+  };  
+  //
   const requestApi = {
     method: 'POST',
     protocol: 'http:',
@@ -157,15 +171,12 @@ ipcMain.on('Exec_Config', (event,argip,argmac,argpass,argfilepath) => {
   request.setHeader("Connection","keep-alive");
   request.setHeader("Authorization","Basic "+argpass);
   request.setHeader("Referer",'http://'+argip+'/System/management.shtml');
-            
+  
   form.pipe(request, { end: false });
   form.on('end', function () {
-    console.log("end");  
+    console.log("end");    
     request.end('\r\n--' + boundaryKey + '--\r\n');        
-  });        
-  request.on('response',(response) => {    
-    console.log(`STATUS: ${response.statusCode}`);
-  })    
+  });     
   //Albert 2021/11/15 Upload Configuration end  
 })
 //Albert 2021/11/12 end
