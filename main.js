@@ -139,7 +139,7 @@ ipcMain.on('UpLoad_Configuration', (event,argip,argmac,argpass) => {
 
 ipcMain.on('Exec_Config', (event,argip,argmac,argpass,argfilepath) => {
   //Albert 2021/11/15 Upload Configuration begin
-  const tempPath="C:\\Config\\"+argmac+"\\IPPower_Settings_Temp.dat";
+  const tempPath=process.cwd()+"\\Config\\"+argmac+"\\IPPower_Settings_Temp.dat";
   const boundaryKey = '----WebKitFormBoundaryq5TPfSCXuGeAhyLM';
   const form=new FormData();  
   //替換lan_ipaddr地址
