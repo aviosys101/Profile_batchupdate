@@ -323,7 +323,7 @@ function refresh_lan_table() {
     for(let i=0; i<ul.length; i++) {
         ul[i].onclick=function(i) {
             var index = this.id;        
-             ResponseDevice_ul(ippower_list[index].ip,ippower_list[index].mac);
+             ResponseDevice_ul(ippower_list[index].ip,ippower_list[index].mac,ippower_list[index].version);
         }
     }    
     const { shell } = require('electron');
@@ -373,7 +373,7 @@ function ResponseDevice_dl(devip,devmac) {
     })    
 }
 //Albert 2021/11/15 UpLoad Configuration
-function ResponseDevice_ul(devip,devmac) {
+function ResponseDevice_ul(devip,devmac,devversion) {
     const { ipcRenderer } = require('electron');
     var configpass=document.getElementById('Comuser').value+':'+document.getElementById('Compass').value;
     ipcRenderer.on('UpLoad_Configuration', (event, arg) => {
@@ -394,7 +394,7 @@ function ResponseDevice_ul(devip,devmac) {
             let res=http.get(cmdstat,(response) => {
                 console.log("response:"+response.statusCode);                
                 if(response.statusCode==200) {               
-                    ipcRenderer.send('Exec_Config',devip,devmac,window.btoa(configpass),filepath);
+                    ipcRenderer.send('Exec_Config',devip,devmac,window.btoa(configpass),filepath,devversion);
                     //msg1 += " Upload Configuration file "+ __dirname+"\\Config\\"+devmac+"\\IPPower_Settings.dat OK..." + "\r\n";
                     msg1 += " Upload Configuration file "+ filepath + " OK...\r\n";
                     status.value += msg1;                    

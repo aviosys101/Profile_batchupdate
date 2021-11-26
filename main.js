@@ -137,11 +137,13 @@ ipcMain.on('UpLoad_Configuration', (event,argip,argmac,argpass) => {
   event.reply('UpLoad_Configuration', 'UpLoad ok');
 })
 
-ipcMain.on('Exec_Config', (event,argip,argmac,argpass,argfilepath) => {
-  //Albert 2021/11/15 Upload Configuration begin
-  const tempPath=process.cwd()+"\\Config\\"+argmac+"\\IPPower_Settings_Temp.dat";
+ipcMain.on('Exec_Config', (event,argip,argmac,argpass,argfilepath,argversion) => {
+  //Albert 2021/11/15 Upload Configuration begin  
   const boundaryKey = '----WebKitFormBoundaryq5TPfSCXuGeAhyLM';
   const form=new FormData();  
+  var ifilepath=argfilepath.toString().search('IPPower_Settings.dat');
+  var file_dir=argfilepath.toString().substr(0,ifilepath-1);
+  
   //替換lan_ipaddr地址
   //form.append('filename', fs.createReadStream(argfilepath));
   var data=fs.readFileSync(argfilepath);  
@@ -149,13 +151,20 @@ ipcMain.on('Exec_Config', (event,argip,argmac,argpass,argfilepath) => {
   var iend=data.toString().search('lan_netmask');
   var str_replace=data.toString().substr(istart,iend-istart-1);
   //console.log(" Str_key: "+str_replace+" ["+istart+"] "+" ["+iend+"] "); 
-  var result=data.toString().replace(str_replace,'lan_ipaddr='+argip);
-  //console.log(result.toString());
-  fs.writeFileSync(tempPath,result.toString(),function(){});
-  form.append('filename', fs.createReadStream(tempPath));
-  if(fs.existsSync(tempPath)) {
-    fs.unlinkSync(tempPath);
-  };  
+  data=data.toString().replace(str_replace,'lan_ipaddr='+argip);
+  
+  istart=data.toString().search('Firmware_Version');
+  iend=data.toString().search('HostName');
+  str_replace=data.toString().substr(istart,iend-istart-1);
+  //console.log(" Str_key: "+str_replace+" ["+istart+"] "+" ["+iend+"] ");
+  data=data.toString().replace(str_replace,'Firmware_Version='+argversion);
+  //console.log(data.toString());
+  fs.writeFileSync(file_dir+"\\IPPower_Settings_Temp.dat",data.toString(),function(){});
+  form.append('filename', fs.createReadStream(file_dir+"\\IPPower_Settings_Temp.dat"));
+  //
+  if(fs.existsSync(file_dir+"\\IPPower_Settings_Temp.dat")) {
+    fs.unlinkSync(file_dir+"\\IPPower_Settings_Temp.dat");
+  };
   //
   const requestApi = {
     method: 'POST',
