@@ -350,22 +350,21 @@ function createEditWindow(dev) {
 
 //Albert 2021/11/12 DownLoad Configuration
 function ResponseDevice_dl(devip,devmac) {
-    const { ipcRenderer } = require('electron');
+    const { ipcRenderer } = require('electron');  
     var configpass=document.getElementById('Comuser').value+':'+document.getElementById('Compass').value;
-    ipcRenderer.on('DownLoad_Configuration', (event, arg) => {
-        console.log(arg);
-    });
     var status = document.getElementById("status");
     var msg1 = "[ "+devip+" ]";
     var myDate1 = new Date();
-    msg1 = myDate1.toLocaleString( ) + " " + msg1; 
+    msg1 = myDate1.toLocaleString( ) + " " + msg1;     
+    ipcRenderer.on('DownLoad_Configuration', (event, arg) => {
+        msg1 += " download Configuration file to "+ arg +" OK...\r\n";
+        status.value += msg1; 
+        console.log(arg);
+    });  
     let cmdstat='http://'+configpass+'@'+devip+'/GetPower.cgi?';
     let res=http.get(cmdstat,(response) => {
         console.log("response:"+response.statusCode);
-        if(response.statusCode==200) {
-            //msg1 += " download Configuration file to "+ __dirname+"\\Config\\"+devmac+"\\IPPower_Settings.dat OK..." + "\r\n";
-            msg1 += " download Configuration file to "+ "C:\\Config\\"+devmac+"\\IPPower_Settings.dat OK..." + "\r\n";
-            status.value += msg1;                        
+        if(response.statusCode==200) {                   
             ipcRenderer.send('DownLoad_Configuration',devip,devmac,configpass);
         } else {  
             msg1 += " UserName or Password error !!" + "\r\n";
@@ -396,28 +395,8 @@ function ResponseDevice_ul(devip,devmac) {
                 console.log("response:"+response.statusCode);                
                 if(response.statusCode==200) {               
                     ipcRenderer.send('Exec_Config',devip,devmac,window.btoa(configpass),filepath);
-                    //Albert 2021/11/15 Upload Configuration begin
-                    /*
-                    const boundaryKey = '----WebKitFormBoundaryq5TPfSCXuGeAhyLM';
-                    const form=new FormData();
-                    const requestApi = {
-                        method: 'POST',
-                        protocol: 'http:',
-                        hostname: devip,
-                        path:'/cgi-bin/upload_settings.cgi'
-                    };
-                    var request = net.request(requestApi);
-                    request.setHeader("Content-Type",'multipart/form-data; boundary=' + boundaryKey);
-                    request.setHeader("Connection","keep-alive");
-                   
-                    form.pipe(request, { end: false });
-                    form.on('end', function () {
-                        console.log("end");  
-                        request.end('\r\n--' + boundaryKey + '--\r\n');        
-                    });  
-                    */                  
-                    //Albert 2021/11/15 Upload Configuration end
-                    msg1 += " Upload Configuration file "+ __dirname+"\\Config\\"+devmac+"\\IPPower_Settings.dat OK..." + "\r\n";
+                    //msg1 += " Upload Configuration file "+ __dirname+"\\Config\\"+devmac+"\\IPPower_Settings.dat OK..." + "\r\n";
+                    msg1 += " Upload Configuration file "+ filepath + " OK...\r\n";
                     status.value += msg1;                    
                 } else {  
                     msg1 += " UserName or Password error !!" + "\r\n";
