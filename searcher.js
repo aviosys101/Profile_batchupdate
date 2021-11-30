@@ -393,7 +393,9 @@ function ResponseDevice_ul(devip,devmac,devversion) {
             let cmdstat='http://'+configpass+'@'+devip+'/GetPower.cgi?';
             let res=http.get(cmdstat,(response) => {
                 console.log("response:"+response.statusCode);                
-                if(response.statusCode==200) {               
+                if(response.statusCode==200) {    
+                    var iend=devversion.toString().search("\\["); 
+                    if(iend!=-1) devversion=devversion.toString().substr(0,iend-1);  
                     ipcRenderer.send('Exec_Config',devip,devmac,window.btoa(configpass),filepath,devversion);
                     //msg1 += " Upload Configuration file "+ __dirname+"\\Config\\"+devmac+"\\IPPower_Settings.dat OK..." + "\r\n";
                     msg1 += " Upload Configuration file "+ filepath + " OK...\r\n";

@@ -83,6 +83,7 @@ app.on('window-all-closed', () => {
 })
 
 const { ipcMain } = require('electron')
+const { time } = require('console')
 let edit_win = null;
 ipcMain.on('open_edit_window', (event, arg) => {
   console.log(arg);
@@ -152,12 +153,14 @@ ipcMain.on('Exec_Config', (event,argip,argmac,argpass,argfilepath,argversion) =>
   var str_replace=data.toString().substr(istart,iend-istart-1);
   //console.log(" Str_key: "+str_replace+" ["+istart+"] "+" ["+iend+"] "); 
   data=data.toString().replace(str_replace,'lan_ipaddr='+argip);
-  
   istart=data.toString().search('Firmware_Version');
   iend=data.toString().search('HostName');
   str_replace=data.toString().substr(istart,iend-istart-1);
   //console.log(" Str_key: "+str_replace+" ["+istart+"] "+" ["+iend+"] ");
-  data=data.toString().replace(str_replace,'Firmware_Version='+argversion);
+  var date=new Date();
+  date=date.toLocaleString('chinese',{hour12:false});
+  date=date.replace(",","");
+  data=data.toString().replace(str_replace,'Firmware_Version='+argversion+" ["+date.toString()+"]");
   //console.log(data.toString());
   fs.writeFileSync(file_dir+"\\IPPower_Settings_Temp.dat",data.toString(),function(){});
   form.append('filename', fs.createReadStream(file_dir+"\\IPPower_Settings_Temp.dat"));
