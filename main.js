@@ -132,19 +132,23 @@ ipcMain.on('UpLoad_Configuration', (event,argip,argmac,argpass) => {
       defaultPath: process.cwd()+"\\Config\\"+argmac+"\\IPPower_Settings.dat",
       properties: ['openFile']}).then(result => {
           filepath=result.filePaths[0];          
-          console.log(filepath);          
-          event.reply('UpLoad_path', filepath);
+          console.log(filepath);
+          var istart=filepath.toString().search('Config')+7;
+          var filedir=filepath.toString().substr(istart,17);
+          console.log("filedir="+filedir);          
+          event.reply('UpLoad_path', filepath, filedir);
       })      
   event.reply('UpLoad_Configuration', 'UpLoad ok');
 })
 
-ipcMain.on('Exec_Config', (event,argip,argmac,argpass,argfilepath,argversion) => {
+ipcMain.on('Exec_Config', (event,argip,argmac,argpass,argfilepath,argversion,argfilemac) => {
   //Albert 2021/11/15 Upload Configuration begin  
   const boundaryKey = '----WebKitFormBoundaryq5TPfSCXuGeAhyLM';
   const form=new FormData();  
-  var ifilepath=argfilepath.toString().search('IPPower_Settings.dat');
-  var file_dir=argfilepath.toString().substr(0,ifilepath-1);
-  
+  //var ifilepath=argfilepath.toString().search('IPPower_Settings.dat');
+  var ifilepath=argfilepath.toString().search(argfilemac);
+  var file_dir=argfilepath.toString().substr(0,ifilepath+argfilemac.length);
+  console.log("argfilemac="+argfilemac+"argfilepath : "+argfilepath+" file_dir : "+file_dir);
   //替換lan_ipaddr地址
   //form.append('filename', fs.createReadStream(argfilepath));
   var data=fs.readFileSync(argfilepath);  

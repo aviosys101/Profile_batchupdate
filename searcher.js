@@ -381,7 +381,7 @@ function ResponseDevice_ul(devip,devmac,devversion) {
     });
     ipcRenderer.send('UpLoad_Configuration',devip,devmac,configpass);
     var status = document.getElementById("status");    
-    ipcRenderer.once('UpLoad_path', (event, filepath) => {
+    ipcRenderer.once('UpLoad_path', (event, filepath, filemac) => {
         console.log(filepath);  
         var msg1 = "[ "+devip+" ]";        
         var myDate1 = new Date();
@@ -396,7 +396,7 @@ function ResponseDevice_ul(devip,devmac,devversion) {
                 if(response.statusCode==200) {    
                     var iend=devversion.toString().search("\\["); 
                     if(iend!=-1) devversion=devversion.toString().substr(0,iend-1);  
-                    ipcRenderer.send('Exec_Config',devip,devmac,window.btoa(configpass),filepath,devversion);
+                    ipcRenderer.send('Exec_Config',devip,devmac,window.btoa(configpass),filepath,devversion,filemac);
                     //msg1 += " Upload Configuration file "+ __dirname+"\\Config\\"+devmac+"\\IPPower_Settings.dat OK..." + "\r\n";
                     msg1 += " Upload Configuration file "+ filepath + " OK...\r\n";
                     status.value += msg1;                    
