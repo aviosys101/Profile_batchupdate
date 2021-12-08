@@ -273,24 +273,29 @@ function refresh_lan_table() {
                 continue;
             }
             var td=document.createElement("td");  
-            tr.appendChild(td);
-            
+            if((k=="netmask") || (k=="bWifi")) {                
+            } else {
+                tr.appendChild(td);
+            }
             if(k == "ip") {//ip
                 td.innerHTML="<a class='dev_url' href='http://" + ippower_list[i][k] + ":" + ippower_list[i]['httpPort'] + "'>" + ippower_list[i][k] + ":"+ippower_list[i]['httpPort'] + "</a>";
-            }else {
+            } else {
                 td.innerHTML=ippower_list[i][k]; 
             }
         }
       
         var td=document.createElement("td");
         tr.appendChild(td);
-        td.innerHTML="<a class='edit' id=" + i + " href='javascript:;'>Edit</a>";//bind id
+        //td.innerHTML="<a class='edit' id=" + i + " href='javascript:;'>Edit</a>";//bind id
+        td.innerHTML="<button class='edit' id=" + i +">Edit";
         var td=document.createElement("td");
         tr.appendChild(td);
-        td.innerHTML="<a class='download' id=" + i + " href='javascript:;'>DL</a>";
+        //td.innerHTML="<a class='download' id=" + i + " href='javascript:;'>DL</a>";
+        td.innerHTML="<button class='download' id=" + i +">Backup";
         var td=document.createElement("td");
         tr.appendChild(td);
-        td.innerHTML="<a class='upload' id=" + i + " href='javascript:;'>UL</a>";        
+        //td.innerHTML="<a class='upload' id=" + i + " href='javascript:;'>UL</a>";        
+        td.innerHTML="<button class='upload' id=" + i +">Save";
     }
     var as=document.querySelectorAll(".edit");    
     for(let i=0; i<as.length;i++) {
@@ -398,7 +403,7 @@ function ResponseDevice_ul(devip,devmac,devversion) {
                     if(iend!=-1) devversion=devversion.toString().substr(0,iend-1);  
                     ipcRenderer.send('Exec_Config',devip,devmac,window.btoa(configpass),filepath,devversion,filemac);
                     //msg1 += " Upload Configuration file "+ __dirname+"\\Config\\"+devmac+"\\IPPower_Settings.dat OK..." + "\r\n";
-                    msg1 += " Upload Configuration file "+ filepath + " OK...\r\n";
+                    msg1 += " Upload Configuration file "+ filepath + " OK...[rebooting]\r\n";
                     status.value += msg1;                    
                 } else {  
                     msg1 += " UserName or Password error !!" + "\r\n";

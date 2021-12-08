@@ -148,7 +148,7 @@ ipcMain.on('Exec_Config', (event,argip,argmac,argpass,argfilepath,argversion,arg
   //var ifilepath=argfilepath.toString().search('IPPower_Settings.dat');
   var ifilepath=argfilepath.toString().search(argfilemac);
   var file_dir=argfilepath.toString().substr(0,ifilepath+argfilemac.length);
-  console.log("argfilemac="+argfilemac+"argfilepath : "+argfilepath+" file_dir : "+file_dir);
+  //console.log("argfilemac="+argfilemac+" argfilepath : "+argfilepath+" file_dir : "+file_dir);
   //替換lan_ipaddr地址
   //form.append('filename', fs.createReadStream(argfilepath));
   var data=fs.readFileSync(argfilepath);  
@@ -163,8 +163,10 @@ ipcMain.on('Exec_Config', (event,argip,argmac,argpass,argfilepath,argversion,arg
   //console.log(" Str_key: "+str_replace+" ["+istart+"] "+" ["+iend+"] ");
   var date=new Date();
   date=date.toLocaleString('chinese',{hour12:false});
-  date=date.replace(",","");
-  data=data.toString().replace(str_replace,'Firmware_Version='+argversion+" ["+date.toString()+"]");
+  date=date.replace(",","/");
+  date=date.replace(/:/g,"/");
+  var date1=date.toString().split("/");
+  data=data.toString().replace(str_replace,'Firmware_Version='+argversion+" ["+date1[0].toString()+"/"+date1[1].toString()+date1[3].toString()+":"+date1[4].toString()+"]");
   //console.log(data.toString());
   fs.writeFileSync(file_dir+"\\IPPower_Settings_Temp.dat",data.toString(),function(){});
   form.append('filename', fs.createReadStream(file_dir+"\\IPPower_Settings_Temp.dat"));
