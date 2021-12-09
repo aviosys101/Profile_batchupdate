@@ -170,11 +170,7 @@ ipcMain.on('Exec_Config', (event,argip,argmac,argpass,argfilepath,argversion,arg
   //console.log(data.toString());
   fs.writeFileSync(file_dir+"\\IPPower_Settings_Temp.dat",data.toString(),function(){});
   form.append('filename', fs.createReadStream(file_dir+"\\IPPower_Settings_Temp.dat"));
-  //
-  if(fs.existsSync(file_dir+"\\IPPower_Settings_Temp.dat")) {
-    fs.unlinkSync(file_dir+"\\IPPower_Settings_Temp.dat");
-  };
-  //
+  
   const requestApi = {
     method: 'POST',
     protocol: 'http:',
@@ -190,7 +186,12 @@ ipcMain.on('Exec_Config', (event,argip,argmac,argpass,argfilepath,argversion,arg
   form.pipe(request, { end: false });
   form.on('end', function () {
     console.log("end");    
-    request.end('\r\n--' + boundaryKey + '--\r\n');        
+    request.end('\r\n--' + boundaryKey + '--\r\n');  
+    //
+    if(fs.existsSync(file_dir+"\\IPPower_Settings_Temp.dat")) {
+      fs.unlinkSync(file_dir+"\\IPPower_Settings_Temp.dat");
+    };
+    //          
   });     
   //Albert 2021/11/15 Upload Configuration end  
 })
