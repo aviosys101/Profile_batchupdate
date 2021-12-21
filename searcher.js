@@ -295,7 +295,7 @@ function refresh_lan_table() {
         var td=document.createElement("td");
         tr.appendChild(td);
         //td.innerHTML="<a class='upload' id=" + i + " href='javascript:;'>UL</a>";        
-        td.innerHTML="<button class='upload' id=" + i +">Save";
+        td.innerHTML="<button class='upload' id=" + i +">Save";        
     }
     var as=document.querySelectorAll(".edit");    
     for(let i=0; i<as.length;i++) {
@@ -387,7 +387,7 @@ function ResponseDevice_ul(devip,devmac,devversion) {
     ipcRenderer.send('UpLoad_Configuration',devip,devmac,configpass);
     var status = document.getElementById("status");    
     ipcRenderer.once('UpLoad_path', (event, filepath, filemac) => {
-        console.log(filepath);  
+        console.log('filename :'+filepath);  
         var msg1 = "[ "+devip+" ]";        
         var myDate1 = new Date();
         msg1 = myDate1.toLocaleString( ) + " " + msg1;         

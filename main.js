@@ -64,20 +64,20 @@ var template = [{
 app.whenReady().then(() => {
 
   createWindow()
-  app.on('activate', () => {
-    if (BrowserWindow.getAllWindows().length === 0) {
+  app.on('activate', () => {    
+    if (BrowserWindow.getAllWindows().length === 0) {      
       createWindow()      
     }
   })
 
-  win.webContents.on('did-finish-load', () => {
+  win.webContents.on('did-finish-load', () => {    
     win.webContents.send('lan_search', "searchering from main star");    
   })
   
 })
 
 app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') {
+  if (process.platform !== 'darwin') {    
     app.quit()
   }
 })
@@ -123,7 +123,7 @@ ipcMain.on('close_edit_window', (event, arg) => {
 ipcMain.on('DownLoad_Configuration', (event,argip,argmac,argpass) => {  
   var filepath=process.cwd()+"\\Config\\"+argmac;
   download(BrowserWindow.getFocusedWindow(), 'http://'+argpass+'@'+argip+'/cgi-bin/ExportSettings.sh', {directory: filepath});
-  event.reply('DownLoad_Configuration', filepath+"\\IPPower_Settings.dat");  
+  event.reply('DownLoad_Configuration', filepath);//+"\\IPPower_Settings.dat");  
 })
 
 ipcMain.on('UpLoad_Configuration', (event,argip,argmac,argpass) => {  
@@ -133,10 +133,14 @@ ipcMain.on('UpLoad_Configuration', (event,argip,argmac,argpass) => {
       properties: ['openFile']}).then(result => {
           filepath=result.filePaths[0];          
           console.log(filepath);
-          var istart=filepath.toString().search('Config')+7;
-          var filedir=filepath.toString().substr(istart,17);
-          console.log("filedir="+filedir);          
-          event.reply('UpLoad_path', filepath, filedir);
+          if(filepath==undefined) {
+            event.reply('UpLoad_path', filepath, "");
+          } else {
+            var istart=filepath.toString().search('Config')+7;
+            var filedir=filepath.toString().substr(istart,17);
+            console.log("filedir="+filedir);          
+            event.reply('UpLoad_path', filepath, filedir);
+          }
       })      
   event.reply('UpLoad_Configuration', 'UpLoad ok');
 })
@@ -170,31 +174,33 @@ ipcMain.on('Exec_Config', (event,argip,argmac,argpass,argfilepath,argversion,arg
   //console.log(data.toString());
   fs.writeFileSync(file_dir+"\\IPPower_Settings_Temp.dat",data.toString(),function(){});
   form.append('filename', fs.createReadStream(file_dir+"\\IPPower_Settings_Temp.dat"));
-  
   const requestApi = {
     method: 'POST',
     protocol: 'http:',
     hostname: argip,
-    path:'/cgi-bin/upload_settings.cgi'
+    path:'/cgi-bin/upload_settings.cgi'    
   };
   var request = net.request(requestApi);
   request.setHeader("Content-Type",'multipart/form-data; boundary=' + boundaryKey);
   request.setHeader("Connection","keep-alive");
   request.setHeader("Authorization","Basic "+argpass);
   request.setHeader("Referer",'http://'+argip+'/System/management.shtml');
-  
-  form.pipe(request, { end: false });
+    
+  form.pipe(request, { end: false });  
   form.on('end', function () {
     console.log("end");    
-    request.end('\r\n--' + boundaryKey + '--\r\n');  
+    request.end('\r\n--' + boundaryKey + '--\r\n');    
     //
     if(fs.existsSync(file_dir+"\\IPPower_Settings_Temp.dat")) {
       fs.unlinkSync(file_dir+"\\IPPower_Settings_Temp.dat");
-    };
-    //          
-  });     
+    };    
+    //            
+  });  
   //Albert 2021/11/15 Upload Configuration end  
 })
+process.on('uncaughtException',(err)=> {
+  console.error('[uncaughtException] Whoops! There was an error: '+err)
+});
 //Albert 2021/11/12 end
 
 //Albert 2021/05/27 begin
