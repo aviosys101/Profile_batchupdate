@@ -291,11 +291,11 @@ function refresh_lan_table() {
         var td=document.createElement("td");
         tr.appendChild(td);
         //td.innerHTML="<a class='download' id=" + i + " href='javascript:;'>DL</a>";
-        td.innerHTML="<button class='download' id=" + i +">Backup";
+        td.innerHTML="<button class='download' id=" + i +">Save";
         var td=document.createElement("td");
         tr.appendChild(td);
         //td.innerHTML="<a class='upload' id=" + i + " href='javascript:;'>UL</a>";        
-        td.innerHTML="<button class='upload' id=" + i +">Save";        
+        td.innerHTML="<button class='upload' id=" + i +">Restore";        
     }
     var as=document.querySelectorAll(".edit");    
     for(let i=0; i<as.length;i++) {
